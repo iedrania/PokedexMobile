@@ -32,13 +32,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int counter = 1;
   late Future<ApiResultModel> futureResults;
 
   @override
   void initState() {
     super.initState();
     futureResults = fetchApiResultModel(
-        'https://pokeapi.co/api/v2/pokemon?limit=10&offset=0');
+        'https://pokeapi.co/api/v2/pokemon?limit=${counter * 10}&offset=0');
   }
 
   @override
@@ -47,54 +48,63 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text("Pokemon"),
       ),
-      body: FutureBuilder<ApiResultModel>(
-        future: futureResults,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return buildGrid(snapshot);
-          } else if (snapshot.hasError) {
-            return Center(child: Text("ERROR: ${snapshot.error}"));
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
+      body: buildGrid(futureResults),
     );
   }
 
-  Widget buildGrid(snapshot) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          GridView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 16,
+  Widget buildGrid(future) {
+    return FutureBuilder<ApiResultModel>(
+      future: futureResults,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 16,
+                  ),
+                  itemCount: counter * 10,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () => Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                            return Detail(
+                              url: snapshot.data!.results[index].url,
+                              index: index,
+                            );
+                          })),
+                      child: Column(children: [
+                        Expanded(
+                            child: Image.network(
+                                "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${(index + 1).toString().padLeft(3, '0')}.png")), // todo limit 905
+                        Text(snapshot.data!.results[index].name),
+                      ]),
+                    );
+                  },
+                ),
+                TextButton(
+                  onPressed: () {
+                    counter++;
+                    futureResults = fetchApiResultModel('https://pokeapi.co/api/v2/pokemon?limit=${counter * 10}&offset=0');
+                    setState(() {
+                      buildGrid(futureResults);
+                    });
+                  },
+                  child: Text("Load more Pokemon"),
+                ),
+              ],
             ),
-            itemCount: 10,
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (context) {
-                  return Detail(
-                    url: snapshot.data!.results[index].url,
-                    index: index,
-                  );
-                })),
-                child: Column(children: [
-                  Expanded(
-                      child: Image.network(
-                          "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${(index + 1).toString().padLeft(3, '0')}.png")), // todo 905
-                  Text(snapshot.data!.results[index].name),
-                ]),
-              );
-            },
-          ),
-          TextButton(onPressed: () {}, child: Text("Load more Pokemon")),
-        ],
-      ),
+          );
+        } else if (snapshot.hasError) {
+          return Center(child: Text("ERROR: ${snapshot.error}"));
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
     );
   }
 }

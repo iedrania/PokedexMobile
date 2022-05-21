@@ -35,7 +35,7 @@ class _DetailState extends State<Detail> {
                 children: [
                   Text(snapshot.data!.name),
                   Image.network(
-                      "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${(widget.index + 1).toString().padLeft(3, '0')}.png"), // todo 905
+                      "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${(widget.index + 1).toString().padLeft(3, '0')}.png"), // todo limit 905
                   Row(
                     children: [
                       Column(
