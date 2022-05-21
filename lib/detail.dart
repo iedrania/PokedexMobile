@@ -2,35 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pokedex_mobile/detail_data.dart';
 
-// only for testing
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const Detail(url: "https://pokeapi.co/api/v2/pokemon/bulbasaur"),
-    );
-  }
-}
-// end of only for testing
-
-// void main() {
-//   runApp(const Detail(url: "https://pokeapi.co/api/v2/pokemon/bulbasaur")); // todo
-// }
-
 class Detail extends StatefulWidget {
-  const Detail({Key? key, required this.url}) : super(key: key);
+  const Detail({Key? key, required this.url, required this.index}) : super(key: key);
 
   final String url;
+  final int index;
 
   @override
   State<Detail> createState() => _DetailState();
@@ -59,7 +35,7 @@ class _DetailState extends State<Detail> {
                 children: [
                   Text(snapshot.data!.name),
                   Image.network(
-                      "https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png"), // todo
+                      "https://assets.pokemon.com/assets/cms2/img/pokedex/full/00${widget.index + 1}.png"), // todo 905
                   Row(
                     children: [
                       Column(

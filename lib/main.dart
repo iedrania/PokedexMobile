@@ -80,12 +80,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     MaterialPageRoute(builder: (context) {
                   return Detail(
                     url: snapshot.data!.results[index].url,
+                    index: index,
                   );
                 })),
                 child: Column(children: [
                   Expanded(
                       child: Image.network(
-                          "https://assets.pokemon.com/assets/cms2/img/pokedex/full/00${index + 1}.png")), // todo
+                          "https://assets.pokemon.com/assets/cms2/img/pokedex/full/00${index + 1}.png")), // todo 905
                   Text(snapshot.data!.results[index].name),
                 ]),
               );
