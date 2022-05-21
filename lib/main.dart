@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.orange,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
@@ -33,11 +33,19 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int counter = 1;
+  late TextEditingController search;
   late Future<ApiResultModel> futureResults;
+
+  @override
+  void dispose() {
+    search.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
+    search = TextEditingController();
     futureResults = fetchApiResultModel(
         'https://pokeapi.co/api/v2/pokemon?limit=${counter * 10}&offset=0');
   }
@@ -46,7 +54,25 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Pokemon"),
+        title: Container(
+          width: 300,
+          child: TextField(
+            controller: search,
+            decoration: const InputDecoration(label: Text("Name or Number")),
+          ),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) {
+                  return Detail(
+                    url: "https://pokeapi.co/api/v2/pokemon/${search.text}",
+                    index: searchPokemon(search.text),
+                  );
+                })), // todo validate input
+            icon: const Icon(Icons.search),
+          )
+        ],
       ),
       body: buildGrid(futureResults),
     );
@@ -72,11 +98,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     return GestureDetector(
                       onTap: () => Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
-                            return Detail(
-                              url: snapshot.data!.results[index].url,
-                              index: index,
-                            );
-                          })),
+                        return Detail(
+                          url: snapshot.data!.results[index].url,
+                          index: index,
+                        );
+                      })),
                       child: Column(children: [
                         Expanded(
                             child: Image.network(
@@ -89,7 +115,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 TextButton(
                   onPressed: () {
                     counter++;
-                    futureResults = fetchApiResultModel('https://pokeapi.co/api/v2/pokemon?limit=${counter * 10}&offset=0');
+                    futureResults = fetchApiResultModel(
+                        'https://pokeapi.co/api/v2/pokemon?limit=${counter * 10}&offset=0');
                     setState(() {
                       buildGrid(futureResults);
                     });
@@ -106,6 +133,15 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       },
     );
+  }
+
+  searchPokemon(String query) {
+    int? num = int.tryParse(query);
+    if (num == null) {
+      return 0; // todo id from name or remove index
+    } else {
+      return num - 1;
+    }
   }
 }
 

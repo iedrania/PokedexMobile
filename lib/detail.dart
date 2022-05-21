@@ -55,7 +55,7 @@ class _DetailState extends State<Detail> {
                     ],
                   ),
                   Text("Type"),
-                  Text( snapshot.data!.types[0].type.name), // todo
+                  Text( snapshot.data!.types[0].type.name), // todo more types
                 ],
               ));
         } else if (snapshot.hasError) {
