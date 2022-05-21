@@ -66,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () => Navigator.push(context,
                 MaterialPageRoute(builder: (context) {
                   return Detail(
-                    index: searchPokemon(search.text),
+                    url: searchPokemon(search.text),
                   );
                 })), // todo validate input
             icon: const Icon(Icons.search),
@@ -98,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       onTap: () => Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
                         return Detail(
-                          index: index + 1,
+                          url: "https://pokeapi.co/api/v2/pokemon/${index + 1}"
                         );
                       })),
                       child: Column(children: [
@@ -136,9 +136,9 @@ class _MyHomePageState extends State<MyHomePage> {
   searchPokemon(String query) {
     int? num = int.tryParse(query);
     if (num == null) {
-      return 0; // todo id from name or remove index
+      return "https://pokeapi.co/api/v2/pokemon/$query";
     } else {
-      return num;
+      return "https://pokeapi.co/api/v2/pokemon/$num";
     }
   }
 }
