@@ -47,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     search = TextEditingController();
     futureResults = fetchApiResultModel(
-        'https://pokeapi.co/api/v2/pokemon?limit=${counter * 10}&offset=0');
+        'https://pokeapi.co/api/v2/pokemon?limit=10&offset=0');
   }
 
   @override
@@ -66,7 +66,6 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () => Navigator.push(context,
                 MaterialPageRoute(builder: (context) {
                   return Detail(
-                    url: "https://pokeapi.co/api/v2/pokemon/${search.text}",
                     index: searchPokemon(search.text),
                   );
                 })), // todo validate input
@@ -99,8 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       onTap: () => Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
                         return Detail(
-                          url: snapshot.data!.results[index].url,
-                          index: index,
+                          index: index + 1,
                         );
                       })),
                       child: Column(children: [
@@ -140,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (num == null) {
       return 0; // todo id from name or remove index
     } else {
-      return num - 1;
+      return num;
     }
   }
 }

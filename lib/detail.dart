@@ -3,9 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:pokedex_mobile/detail_data.dart';
 
 class Detail extends StatefulWidget {
-  const Detail({Key? key, required this.url, required this.index}) : super(key: key);
+  const Detail({Key? key, required this.index}) : super(key: key);
 
-  final String url;
   final int index;
 
   @override
@@ -18,7 +17,7 @@ class _DetailState extends State<Detail> {
   @override
   void initState() {
     super.initState();
-    futurePokemon = fetchPokemon(widget.url);
+    futurePokemon = fetchPokemon(widget.index);
   }
 
   @override
@@ -29,13 +28,32 @@ class _DetailState extends State<Detail> {
         if (snapshot.hasData) {
           return Scaffold(
               appBar: AppBar(
+                automaticallyImplyLeading: false,
+                leading: IconButton(onPressed: () {
+                  if (snapshot.data!.id > 1) {
+                    setState(() {
+                      futurePokemon = fetchPokemon(snapshot.data!.id - 1);
+                    });
+                  }
+                },
+                  icon: const Icon(Icons.arrow_back),
+                ),
                 title: Text(snapshot.data!.id.toString()),
+                actions: [
+                  IconButton(onPressed: () {
+                    setState(() {
+                      futurePokemon = fetchPokemon(snapshot.data!.id + 1);
+                    });
+                  },
+                    icon: const Icon(Icons.arrow_forward),
+                  ),
+                ],
               ),
               body: ListView(
                 children: [
                   Text(snapshot.data!.name),
                   Image.network(
-                      "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${(widget.index + 1).toString().padLeft(3, '0')}.png"), // todo limit 905
+                      "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${(snapshot.data!.id).toString().padLeft(3, '0')}.png"), // todo limit 905
                   Row(
                     children: [
                       Column(
@@ -68,8 +86,8 @@ class _DetailState extends State<Detail> {
   }
 }
 
-Future<Pokemon> fetchPokemon(String url) async {
-  final response = await http.get(Uri.parse(url));
+Future<Pokemon> fetchPokemon(int id) async {
+  final response = await http.get(Uri.parse("https://pokeapi.co/api/v2/pokemon/$id"));
 
   if (response.statusCode == 200) {
     return pokemonFromJson(response.body);
