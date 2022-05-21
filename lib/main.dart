@@ -54,23 +54,38 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Container(
+        backgroundColor: Colors.black,
+        title: SizedBox(
           width: 300,
           child: TextField(
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+            cursorColor: Colors.white,
             controller: search,
-            decoration: const InputDecoration(label: Text("Name or Number")),
+            decoration: const InputDecoration(
+              label:
+                  Text("Name or Number", style: TextStyle(color: Colors.white)),
+            ),
           ),
         ),
         actions: [
-          IconButton(
-            onPressed: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) {
+          Container(
+              decoration: const BoxDecoration(
+                color: Colors.orange,
+                borderRadius: BorderRadius.all(Radius.circular(5)),
+              ),
+              margin: const EdgeInsets.all(10),
+              child: IconButton(
+                onPressed: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (context) {
                   return Detail(
-                    url: searchPokemon(search.text),
+                    url: searchPokemon(search.text.toLowerCase()),
                   );
                 })), // todo validate input
-            icon: const Icon(Icons.search),
-          )
+                icon: const Icon(Icons.search),
+                color: Colors.black,
+              ))
         ],
       ),
       body: buildGrid(futureResults),
@@ -98,14 +113,18 @@ class _MyHomePageState extends State<MyHomePage> {
                       onTap: () => Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
                         return Detail(
-                          url: "https://pokeapi.co/api/v2/pokemon/${index + 1}"
-                        );
+                            url:
+                                "https://pokeapi.co/api/v2/pokemon/${index + 1}");
                       })),
                       child: Column(children: [
                         Expanded(
                             child: Image.network(
                                 "https://assets.pokemon.com/assets/cms2/img/pokedex/full/${(index + 1).toString().padLeft(3, '0')}.png")), // todo limit 905
-                        Text(snapshot.data!.results[index].name),
+                        Text(
+                          snapshot.data!.results[index].name[0].toUpperCase() +
+                              snapshot.data!.results[index].name.substring(1),
+                          style: const TextStyle(fontSize: 15),
+                        ),
                       ]),
                     );
                   },
@@ -119,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       buildGrid(futureResults);
                     });
                   },
-                  child: Text("Load more Pokemon"),
+                  child: const Text("Load more Pokemon"),
                 ),
               ],
             ),
